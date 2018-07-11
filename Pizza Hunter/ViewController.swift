@@ -18,7 +18,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     @IBOutlet weak var directionsButton: UIButton!
     @IBOutlet weak var phoneNumberLabel: UILabel!
     @IBOutlet weak var addressLabel: UILabel!
-    @IBOutlet weak var websiteButton: UIButton!
     @IBOutlet weak var titleLabel: UILabel!
     
     var search2 = ""
@@ -37,7 +36,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         locationManager.delegate = self
         locationManager.startUpdatingLocation()
         mapView.delegate = self
-        infoView.isHidden = true
+        infoView.alpha = 0
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -69,6 +68,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         
         let insertAction = UIAlertAction(title: "Search", style: .default) { (action) in
             let searchTextField = alert.textFields![0] as UITextField
+            searchTextField.autocapitalizationType = .words
             self.search2 = searchTextField.text!
             self.loadOptions()
         }
@@ -102,7 +102,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         address += selectedMapItem.placemark.administrativeArea! + " "
         address += selectedMapItem.placemark.postalCode!
         addressLabel.text = address
-        infoView.isHidden = false
+        UIView.animate(withDuration: 0.3) {
+            self.infoView.alpha = 0.9
+        }
+        
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
@@ -112,9 +115,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                 selectedMapItem = mapItem
             }
         }
-        //print(selectedMapItem.name!)
     }
     
+
+    @IBAction func onWebsiteButtonTapped(_ sender: Any) {
+        if let url = selectedMapItem.url {
+            present(SFSafariViewController(url: url), animated: true)
+        }
+    }
+    
+    
+    @IBAction func onDirectionsButtonTapped(_ sender: Any) {
+        let launchOptions = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeWalking]
+        MKMapItem.openMaps(with: [selectedMapItem], launchOptions: launchOptions)
+    }
+    
+    
+    @IBAction func tappedAway(_ sender: UITapGestureRecognizer) {
+        UIView.animate(withDuration: 0.3) {
+            self.infoView.alpha = 0
+        }
+    }
     
     
     func loadOptions() {

@@ -21,6 +21,10 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="gkT-9n-fwV">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="fu4-it-aDh" appends="YES" id="doQ-Wc-YSq"/>
+                                </connections>
                             </mapView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Qf-Ab-p8N">
                                 <rect key="frame" x="7" y="600" width="400" height="128"/>
@@ -37,6 +41,9 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LOY-Zv-qr7">
                                         <rect key="frame" x="322" y="8" width="70" height="30"/>
                                         <state key="normal" title="Directions"/>
+                                        <connections>
+                                            <action selector="onDirectionsButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="8wW-KY-VlR"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rxp-MV-v3p">
                                         <rect key="frame" x="50" y="91" width="300" height="22"/>
@@ -59,6 +66,9 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ax9-MK-R4V">
                                         <rect key="frame" x="8" y="8" width="70" height="30"/>
                                         <state key="normal" title="Website"/>
+                                        <connections>
+                                            <action selector="onWebsiteButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="gAD-ca-28V"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="0.8983304794520548" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -107,10 +117,14 @@
                         <outlet property="mapView" destination="gkT-9n-fwV" id="EPm-lp-C2c"/>
                         <outlet property="phoneNumberLabel" destination="slA-7e-JKh" id="chc-kJ-V1D"/>
                         <outlet property="titleLabel" destination="hPe-Z5-4Tl" id="NeJ-Y9-aQB"/>
-                        <outlet property="websiteButton" destination="Ax9-MK-R4V" id="j7A-zb-pml"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="fu4-it-aDh">
+                    <connections>
+                        <action selector="tappedAway:" destination="BYZ-38-t0r" id="RaB-4C-Nvn"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1043.4782608695652" y="132.88043478260872"/>
         </scene>
