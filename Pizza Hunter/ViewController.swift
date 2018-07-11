@@ -9,12 +9,21 @@
 import UIKit
 import MapKit
 import CoreLocation
+import SafariServices
 
 class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate{
 
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var infoView: UIView!
+    @IBOutlet weak var directionsButton: UIButton!
+    @IBOutlet weak var phoneNumberLabel: UILabel!
+    @IBOutlet weak var addressLabel: UILabel!
+    @IBOutlet weak var websiteButton: UIButton!
+    @IBOutlet weak var titleLabel: UILabel!
     
     var search2 = ""
+    var selectedMapItem = MKMapItem()
+    var mapItems = [MKMapItem]()
     
     
     var region = MKCoordinateRegion()
@@ -28,6 +37,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         locationManager.delegate = self
         locationManager.startUpdatingLocation()
         mapView.delegate = self
+        infoView.isHidden = true
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -82,6 +92,29 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         return pinView
     }
     
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        infoView.layer.cornerRadius = 20
+        titleLabel.text = selectedMapItem.name!
+        phoneNumberLabel.text = selectedMapItem.phoneNumber
+        var address = selectedMapItem.placemark.subThoroughfare! + " "
+        address += selectedMapItem.placemark.thoroughfare! + "\n"
+        address += selectedMapItem.placemark.locality! + ", "
+        address += selectedMapItem.placemark.administrativeArea! + " "
+        address += selectedMapItem.placemark.postalCode!
+        addressLabel.text = address
+        infoView.isHidden = false
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        for mapItem in mapItems {
+            if mapItem.placemark.coordinate.latitude == view.annotation?.coordinate.latitude &&
+                mapItem.placemark.coordinate.longitude == view.annotation?.coordinate.longitude {
+                selectedMapItem = mapItem
+            }
+        }
+        //print(selectedMapItem.name!)
+    }
+    
     
     
     func loadOptions() {
@@ -96,12 +129,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         let search = MKLocalSearch(request: request)
         search.start { (response, error) in
             if let response = response {
-                for _ in response.mapItems {
+                for mapItem in response.mapItems {
                     for mapItem in response.mapItems {
                         let annotation = MKPointAnnotation()
                         annotation.coordinate = mapItem.placemark.coordinate
                         annotation.title = mapItem.name
                         self.mapView.addAnnotation(annotation)
+                        self.mapItems.append(mapItem)
                     }
                 }
             }
