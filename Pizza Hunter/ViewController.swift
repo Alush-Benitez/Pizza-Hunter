@@ -10,9 +10,13 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController, CLLocationManagerDelegate{
+class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate{
 
     @IBOutlet weak var mapView: MKMapView!
+    
+    var search2 = ""
+    
+    
     var region = MKCoordinateRegion()
     
     let locationManager = CLLocationManager()
@@ -23,6 +27,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate{
         mapView.showsUserLocation = true
         locationManager.delegate = self
         locationManager.startUpdatingLocation()
+        mapView.delegate = self
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -32,7 +37,58 @@ class ViewController: UIViewController, CLLocationManagerDelegate{
         region = MKCoordinateRegionMake(center, span)
         mapView.setRegion(region, animated: true)
     }
+    
+    
+    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
+        loadOptions()
+    }
 
-
+    @IBAction func searchButtonClicked(_ sender: Any) {
+        displayMesage(message: "Search for a place")
+    }
+    
+    
+    func displayMesage(message:String){
+        let alert = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        
+        alert.addTextField { (textField) in
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(cancelAction)
+        
+        let insertAction = UIAlertAction(title: "Search", style: .default) { (action) in
+            let searchTextField = alert.textFields![0] as UITextField
+            self.search2 = searchTextField.text!
+            self.loadOptions()
+        }
+        alert.addAction(insertAction)
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
+    func loadOptions() {
+        
+        for annotation in mapView.annotations {
+            self.mapView.removeAnnotation(annotation)
+        }
+        
+        let request = MKLocalSearchRequest()
+        request.naturalLanguageQuery = search2
+        request.region = region
+        let search = MKLocalSearch(request: request)
+        search.start { (response, error) in
+            if let response = response {
+                for mapItem in response.mapItems {
+                    for mapItem in response.mapItems {
+                        let annotation = MKPointAnnotation()
+                        annotation.coordinate = mapItem.placemark.coordinate
+                        annotation.title = mapItem.name
+                        self.mapView.addAnnotation(annotation)
+                    }
+                }
+            }
+        }
+    }
 }
 
