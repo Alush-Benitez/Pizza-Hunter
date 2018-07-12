@@ -11,6 +11,9 @@ import MapKit
 import CoreLocation
 import SafariServices
 
+//42.0516
+//-87.6814
+
 class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate{
 
     @IBOutlet weak var mapView: MKMapView!
@@ -23,6 +26,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     var search2 = ""
     var selectedMapItem = MKMapItem()
     var mapItems = [MKMapItem]()
+    
+    let food = ["pizza", "sushi", "mexican", "chinese", "indian", "bbq", "BBQ", "barbecue", "seafood", "steak", "lobster", "food", "restauant", "fast food", "breakfast", "lunch", "dinner"]
+    let car = ["gas", "car dealership", "dealership", "gas station", "rental cars", "parking"]
+    let grocery = ["grocery stores", "grocery"]
+    let maintenance = ["car shop", "repair shop"]
+    let apple = ["apple store", "apple stores"]
+    let star = ["movies", "movie theatre"]
+    let sun = ["parks", "park", "garden"]
+    
+    @NSCopying var markerTintColor: UIColor? = .orange
     
     
     var region = MKCoordinateRegion()
@@ -42,7 +55,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations.first!
         let center = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-        let span = MKCoordinateSpanMake(0.025, 0.025)
+        let span = MKCoordinateSpanMake(0.05, 0.05)
         region = MKCoordinateRegionMake(center, span)
         mapView.setRegion(region, animated: true)
     }
@@ -81,15 +94,52 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         if annotation is MKUserLocation {
             return nil
         }
-        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: "pin")
-        if pinView == nil {
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pinView")
-            pinView?.canShowCallout = true
-            pinView?.rightCalloutAccessoryView = UIButton(type: .infoLight)
-        } else {
-            pinView?.annotation = annotation
+        
+        let identifier = ""
+        var markerView = MKMarkerAnnotationView()
+        
+        if let dequedView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView {
+            markerView = dequedView
+        } else{
+            markerView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         }
-        return pinView
+        
+        
+        markerView.canShowCallout = true
+        markerView.rightCalloutAccessoryView = UIButton(type: .infoLight)
+        if food.contains(search2) {
+            markerView.glyphImage = UIImage(named: "restaurant")
+        } else if car.contains(search2) {
+            markerView.glyphImage = UIImage(named: "car")
+        } else if grocery.contains(search2) {
+            markerView.glyphImage = UIImage(named: "shopping_cart")
+        } else if maintenance.contains(search2) {
+            markerView.glyphImage = UIImage(named: "maintenance")
+        } else if apple.contains(search2) {
+            markerView.glyphImage = UIImage(named: "apple")
+        } else if star.contains(search2) {
+            markerView.glyphImage = UIImage(named: "star")
+        } else if sun.contains(search2){
+            markerView.glyphImage = UIImage(named: "sun")
+        }
+        //markerView.glyphTintColor = .black
+        //markerView.tintColor = .black
+        //markerView.clusteringIdentifier = identifier
+        return markerView
+        
+        /*
+        var markerView = mapView.dequeueReusableAnnotationView(withIdentifier: "marker")
+        if markerView == nil {
+            markerView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: "marker")
+            markerView?.canShowCallout = true
+            markerView?.rightCalloutAccessoryView = UIButton(type: .infoLight)
+            markerView?.markerTintColor = markerTintColor
+        } else {
+            markerView?.annotation = annotation
+        }
+        return markerView
+ */
+        return markerView
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -103,7 +153,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         address += selectedMapItem.placemark.postalCode!
         addressLabel.text = address
         UIView.animate(withDuration: 0.3) {
-            self.infoView.alpha = 0.9
+            self.infoView.alpha = 0.95
         }
         
     }
